@@ -52,6 +52,11 @@ PageItem_Symbol::PageItem_Symbol(ScribusDoc *pa, double x, double y, double w, d
 {
 }
 
+PageItem_Symbol::PageItem_Symbol(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::Symbol, x, y, w, h, 0, CommonStrings::None, CommonStrings::None, nameTiming)
+{
+}
+
 void PageItem_Symbol::DrawObj_Item(ScPainter *p, const QRectF& /*e*/)
 {
 	if (m_Doc->RePos)

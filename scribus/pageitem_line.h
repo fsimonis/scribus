@@ -37,6 +37,7 @@ class SCRIBUS_API PageItem_Line : public PageItem
 
 public:
 	PageItem_Line(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem_Line(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	PageItem_Line(const PageItem & p) : PageItem(p) {}
 	~PageItem_Line() {};
 	

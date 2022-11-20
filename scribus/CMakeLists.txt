@@ -51,8 +51,6 @@ add_subdirectory(third_party)
 
 
 
-
-
 set(CMAKE_AUTOUIC_SEARCH_PATHS ui/)
 
 set_property(SOURCE third_party/fparser/file.hh PROPERTY SKIP_AUTOGEN ON)

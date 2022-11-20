@@ -46,8 +46,11 @@ const double PageItem_Table::MinimumRowHeight = 3.0;
 // The minimum column width.
 const double PageItem_Table::MinimumColumnWidth = 3.0;
 
-PageItem_Table::PageItem_Table(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, int numRows, int numColumns) :
-	PageItem(pa, PageItem::Table, x, y, w, h, w2, fill, outline),
+PageItem_Table::PageItem_Table(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, int numRows, int numColumns)
+  : PageItem_Table(pa, x, y, w, h, w2, fill, outline, NameTiming::Direct, numRows, numColumns) {}
+
+PageItem_Table::PageItem_Table(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline,NameTiming nameTiming, int numRows, int numColumns ) :
+	PageItem(pa, PageItem::Table, x, y, w, h, w2, fill, outline, nameTiming),
 	m_rows(0), m_columns(0), m_tablePainter(new CollapsedTablePainter(this))
 {
 	initialize(numRows, numColumns);

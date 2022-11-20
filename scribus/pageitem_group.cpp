@@ -52,6 +52,11 @@ PageItem_Group::PageItem_Group(ScribusDoc *pa, double x, double y, double w, dou
 {
 }
 
+PageItem_Group::PageItem_Group(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::Group, x, y, w, h, 0, CommonStrings::None, CommonStrings::None, nameTiming)
+{
+}
+
 PageItem_Group::~PageItem_Group()
 {
 //	while (!groupItemList.isEmpty())

@@ -822,6 +822,9 @@ public:
 	 * @brief Just create but don't add to items list and don't create undo record
 	 */
 	PageItem* createPageItem(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline);
+
+	PageItem* createPageItemDeferred(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline);
+
 	
 	/**
 	 * @brief Add an Item to the document.
@@ -842,6 +845,8 @@ public:
 	\param noteFrame optional (default false) indicates that noteframes should be created, not text frame
 	*/
 	int itemAdd(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind = PageItem::StandardItem);
+
+	int itemAddDeferred(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind = PageItem::StandardItem);
 
 	/** Add an item to the page based on the x/y position. Item will be fitted to the closest guides/margins */
 	int itemAddArea(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind = PageItem::StandardItem);
@@ -1095,6 +1100,7 @@ public:
 
 	QList<PageItem*>* groupOfItem(QList<PageItem*>* itemList, PageItem* item);
 	PageItem* groupObjectsSelection(Selection* customSelection = nullptr);
+	PageItem* groupObjectsSelectionDeferred(Selection* customSelection = nullptr);
 	PageItem* groupObjectsList(QList<PageItem*> &itemList);
 	void groupObjectsToItem(PageItem* groupItem, QList<PageItem*> &itemList);
 	PageItem * itemSelection_GroupObjects  (bool changeLock, bool lock, Selection* customSelection = nullptr, PageItem_Group* groupItem = nullptr);
@@ -1761,6 +1767,10 @@ private:
 	bool m_flag_notesChanged {false};
 
 	void multipleDuplicateByPage(const ItemMultipleDuplicateData& mdData, Selection& selection, QString& tooltip);
+
+	int implItemAdd(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind, PageItem::NameTiming nameTiming);
+	PageItem* implCreatePageItem(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::NameTiming nameTiming);
+	PageItem* implGroupObjectsSelection(Selection* customSelection, PageItem::NameTiming nameTiming);
 
 public:
 	bool usesMarksAndNotes() const { return m_docUsesMarksAndNotes; }

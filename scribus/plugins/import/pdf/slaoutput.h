@@ -29,6 +29,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusview.h"
 #include "selection.h"
 #include "vgradient.h"
+#include "bulkadder.h"
 
 #include <poppler/Object.h>
 #include <poppler/OutputDev.h>
@@ -285,6 +286,7 @@ protected:
 	void pushGroup(const QString& maskName = "", bool forSoftMask = false, bool alpha = false, bool inverted = false);
 
 	ScribusDoc* m_doc;
+  BulkAdder m_bulkadder;
 	Qt::PenCapStyle m_lineEnd { Qt::FlatCap };
 	Qt::PenJoinStyle m_lineJoin { Qt::MiterJoin };
 	QList<PageItem*>* m_Elements;

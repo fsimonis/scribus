@@ -48,6 +48,11 @@ PageItem_Polygon::PageItem_Polygon(ScribusDoc *pa, double x, double y, double w,
 {
 }
 
+PageItem_Polygon::PageItem_Polygon(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::Polygon, x, y, w, h, w2, fill, outline, nameTiming)
+{
+}
+
 void PageItem_Polygon::DrawObj_Item(ScPainter *p, const QRectF& /*e*/)
 {
 	if (!m_Doc->RePos)

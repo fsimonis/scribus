@@ -21,6 +21,7 @@ for which a new license (GPL+exception) is in place.
  *                                                                         *
  ***************************************************************************/
 
+#include <fcntl.h>
 #if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
 #define _USE_MATH_DEFINES
 #endif
@@ -47,6 +48,9 @@ for which a new license (GPL+exception) is in place.
 using namespace std;
 
 PageItem_Arc::PageItem_Arc(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
+	: PageItem_Arc(pa, x, y, w, h, w2, fill, outline, NameTiming::Direct){};
+
+PageItem_Arc::PageItem_Arc(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
 	: PageItem(pa, PageItem::Arc, x, y, w, h, w2, fill, outline)
 {
 	arcHeight = h;

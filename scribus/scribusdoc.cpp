@@ -5189,72 +5189,82 @@ bool ScribusDoc::copyPageToMasterPage(int pageNumber, int leftPage, int maxLeftP
 
 PageItem* ScribusDoc::createPageItem(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline)
 {
+  return implCreatePageItem(itemType, frameType, x, y, b, h, w, fill, outline, PageItem::NameTiming::Direct);
+}
+
+PageItem* ScribusDoc::createPageItemDeferred(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline)
+{
+  return implCreatePageItem(itemType, frameType, x, y, b, h, w, fill, outline, PageItem::NameTiming::Deferred);
+}
+
+PageItem* ScribusDoc::implCreatePageItem(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::NameTiming nameTiming)
+{
 	PageItem* newItem = nullptr;
 	switch (itemType)
 	{
 		//Q_ASSERTs here will warn on creation issues when a coder specifies the frameType incorrectly
 		//for items that do not have/need a frameType for creation.
 		case PageItem::ImageFrame:
-			newItem = new PageItem_ImageFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor);
+			newItem = new PageItem_ImageFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::TextFrame:
-			newItem = new PageItem_TextFrame(this, x, y, b, h, w, CommonStrings::None, outline);
+			newItem = new PageItem_TextFrame(this, x, y, b, h, w, CommonStrings::None, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::Line:
 			{
 				//CB 5521 Remove false minimum line width
 				double lineWidth = w; // == 0.0 ? 1.0 : w;
-				newItem = new PageItem_Line(this, x, y, b, h, lineWidth, CommonStrings::None, outline);
+				newItem = new PageItem_Line(this, x, y, b, h, lineWidth, CommonStrings::None, outline, nameTiming);
 //				Q_ASSERT(frameType == PageItem::Unspecified);
 			}
 			break;
 		case PageItem::Table:
-			newItem = new PageItem_Table(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_Table(this, x, y, b, h, w, fill, outline,nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::Polygon:
-			newItem = new PageItem_Polygon(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_Polygon(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Ellipse || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::PolyLine:
-			newItem = new PageItem_PolyLine(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_PolyLine(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Unspecified);
 			break;
 		case PageItem::PathText:
 			//Currently used only in fileloader
-			newItem = new PageItem_PathText(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_PathText(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Unspecified);
 			break;
 		case PageItem::LatexFrame:
-			newItem = new PageItem_LatexFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor);
+			newItem = new PageItem_LatexFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 #ifdef HAVE_OSG
 		case PageItem::OSGFrame:
-			newItem = new PageItem_OSGFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor);
+			newItem = new PageItem_OSGFrame(this, x, y, b, h, w, m_docPrefsData.itemToolPrefs.imageFillColor, m_docPrefsData.itemToolPrefs.imageStrokeColor, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 #endif
 		case PageItem::Symbol:
-			newItem = new PageItem_Symbol(this, x, y, b, h, w, CommonStrings::None, CommonStrings::None);
+			newItem = new PageItem_Symbol(this, x, y, b, h, w, CommonStrings::None, CommonStrings::None,nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::Group:
-			newItem = new PageItem_Group(this, x, y, b, h, w, CommonStrings::None, CommonStrings::None);
+			newItem = new PageItem_Group(this, x, y, b, h, w, CommonStrings::None, CommonStrings::None, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::RegularPolygon:
-			newItem = new PageItem_RegularPolygon(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_RegularPolygon(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Ellipse || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::Arc:
-			newItem = new PageItem_Arc(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_Arc(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Rectangle || frameType == PageItem::Ellipse || frameType == PageItem::Unspecified);
 			break;
 		case PageItem::Spiral:
-			newItem = new PageItem_Spiral(this, x, y, b, h, w, fill, outline);
+			newItem = new PageItem_Spiral(this, x, y, b, h, w, fill, outline, nameTiming);
 //			Q_ASSERT(frameType == PageItem::Unspecified);
 			break;
 		default:
@@ -5271,6 +5281,16 @@ PageItem* ScribusDoc::createPageItem(const PageItem::ItemType itemType, const Pa
 
 int ScribusDoc::itemAdd(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind)
 {
+  return implItemAdd(itemType,frameType, x, y, b, h, w, fill, outline, itemKind, PageItem::NameTiming::Direct);
+}
+
+int ScribusDoc::itemAddDeferred(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind)
+{
+  return implItemAdd(itemType,frameType, x, y, b, h, w, fill, outline, itemKind, PageItem::NameTiming::Deferred);
+}
+
+int ScribusDoc::implItemAdd(const PageItem::ItemType itemType, const PageItem::ItemFrameType frameType, double x, double y, double b, double h, double w, const QString& fill, const QString& outline, PageItem::ItemKind itemKind, PageItem::NameTiming nameTiming)
+{
 	UndoTransaction activeTransaction;
 	if (UndoManager::undoEnabled()) // && !m_itemCreationTransaction)
 	{
@@ -5284,7 +5304,7 @@ int ScribusDoc::itemAdd(const PageItem::ItemType itemType, const PageItem::ItemF
 		itemAddDetails(PageItem::TextFrame, frameType, newItem);
 	}
 	else
-		newItem = createPageItem(itemType, frameType, x, y, b, h, w, fill, outline); 
+		newItem = implCreatePageItem(itemType, frameType, x, y, b, h, w, fill, outline, nameTiming); 
 	
 	Q_CHECK_PTR(newItem);
 	if (newItem == nullptr)
@@ -15169,6 +15189,16 @@ void ScribusDoc::scaleGroup(double scx, double scy, bool scaleText, Selection* c
 
 PageItem* ScribusDoc::groupObjectsSelection(Selection* customSelection)
 {
+  return implGroupObjectsSelection(customSelection, PageItem::NameTiming::Direct);
+}
+
+PageItem* ScribusDoc::groupObjectsSelectionDeferred(Selection* customSelection)
+{
+  return implGroupObjectsSelection(customSelection, PageItem::NameTiming::Deferred);
+}
+
+PageItem* ScribusDoc::implGroupObjectsSelection(Selection* customSelection, PageItem::NameTiming nameTiming)
+{
 	Selection* itemSelection = (customSelection != nullptr) ? customSelection : m_Selection;
 	if (itemSelection->count() < 1)
 		return nullptr;
@@ -15207,10 +15237,12 @@ PageItem* ScribusDoc::groupObjectsSelection(Selection* customSelection)
 	double gy = miny;
 	double gw = maxx - minx;
 	double gh = maxy - miny;
-	int z = itemAdd(PageItem::Group, PageItem::Rectangle, gx, gy, gw, gh, 0, CommonStrings::None, CommonStrings::None);
+	int z = implItemAdd(PageItem::Group, PageItem::Rectangle, gx, gy, gw, gh, 0, CommonStrings::None, CommonStrings::None, PageItem::StandardItem, nameTiming);
 	PageItem *groupItem = Items->takeAt(z);
 	Items->insert(lowestItem, groupItem);
-	groupItem->setItemName( tr("Group%1").arg(GroupCounter));
+  if (nameTiming == PageItem::NameTiming::Direct) {
+    groupItem->setItemName( tr("Group%1").arg(GroupCounter));
+  }
 	groupItem->AutoName = false;
 	groupItem->groupWidth = gw;
 	groupItem->groupHeight = gh;

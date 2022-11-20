@@ -41,7 +41,11 @@ for which a new license (GPL+exception) is in place.
 #include "util.h"
 
 PageItem_LatexFrame::PageItem_LatexFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-		: PageItem_ImageFrame(pa, x, y, w, h, w2, fill, outline)
+		: PageItem_LatexFrame(pa, x, y, w, h, w2, fill, outline, NameTiming::Direct)
+{}
+
+PageItem_LatexFrame::PageItem_LatexFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+		: PageItem_ImageFrame(pa, x, y, w, h, w2, fill, outline, nameTiming)
 {
 	setUPixmap(Um::ILatexFrame);
 	m_itemName = tr("Render") + QString::number(m_Doc->TotalItems);

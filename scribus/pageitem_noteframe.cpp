@@ -16,7 +16,10 @@
 #include "text/boxes.h"
 
 PageItem_NoteFrame::PageItem_NoteFrame(NotesStyle *nStyle, ScribusDoc *doc, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-	: PageItem_TextFrame(doc, x, y, w, h, w2, fill, outline)
+  : PageItem_NoteFrame(nStyle, doc, x, y, w, h, w2, fill, outline, NameTiming::Direct) {}
+
+PageItem_NoteFrame::PageItem_NoteFrame(NotesStyle *nStyle, ScribusDoc *doc, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem_TextFrame(doc, x, y, w, h, w2, fill, outline, nameTiming)
 {
 	m_nstyle = nStyle;
 	itemText.clear();
@@ -44,12 +47,17 @@ PageItem_NoteFrame::PageItem_NoteFrame(NotesStyle *nStyle, ScribusDoc *doc, doub
 }
 
 PageItem_NoteFrame::PageItem_NoteFrame(ScribusDoc *doc, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-	: PageItem_TextFrame(doc, x, y, w, h, w2, fill, outline)
+	: PageItem_NoteFrame(doc, x, y, w, h, w2, fill, outline, NameTiming::Direct) {}
+
+PageItem_NoteFrame::PageItem_NoteFrame(ScribusDoc *doc, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem_TextFrame(doc, x, y, w, h, w2, fill, outline, nameTiming)
 {
 	m_textFlowMode = TextFlowUsesFrameShape;
 }
 
-PageItem_NoteFrame::PageItem_NoteFrame(PageItem_TextFrame* inFrame, NotesStyle *nStyle) : PageItem_TextFrame(inFrame->doc(),inFrame->xPos(), inFrame->yPos(),inFrame->width(), inFrame->height(),inFrame->lineWidth(), inFrame->fillColor(), inFrame->lineColor())
+PageItem_NoteFrame::PageItem_NoteFrame(PageItem_TextFrame* inFrame, NotesStyle *nStyle) : PageItem_NoteFrame(inFrame, nStyle, NameTiming::Direct) {};
+
+PageItem_NoteFrame::PageItem_NoteFrame(PageItem_TextFrame* inFrame, NotesStyle *nStyle, NameTiming nameTiming) : PageItem_TextFrame(inFrame->doc(),inFrame->xPos(), inFrame->yPos(),inFrame->width(), inFrame->height(),inFrame->lineWidth(), inFrame->fillColor(), inFrame->lineColor(), nameTiming)
 {
 	m_nstyle = nStyle;
 	m_masterFrame = inFrame;

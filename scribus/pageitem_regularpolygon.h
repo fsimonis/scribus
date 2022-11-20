@@ -37,6 +37,7 @@ class SCRIBUS_API PageItem_RegularPolygon : public PageItem
 
 public:
 	PageItem_RegularPolygon(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem_RegularPolygon(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	PageItem_RegularPolygon(const PageItem& p);
 	~PageItem_RegularPolygon() {};
 

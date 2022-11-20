@@ -55,8 +55,13 @@ for which a new license (GPL+exception) is in place.
 #include "util.h"
 
 
+PageItem_ImageFrame::PageItem_ImageFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::ImageFrame, x, y, w, h, w2, fill, outline, nameTiming)
+{
+}
+
 PageItem_ImageFrame::PageItem_ImageFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-	: PageItem(pa, PageItem::ImageFrame, x, y, w, h, w2, fill, outline)
+	: PageItem(pa, PageItem::ImageFrame, x, y, w, h, w2, fill, outline, NameTiming::Direct)
 {
 }
 

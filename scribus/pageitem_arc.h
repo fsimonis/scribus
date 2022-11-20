@@ -37,6 +37,7 @@ class SCRIBUS_API PageItem_Arc : public PageItem
 
 public:
 	PageItem_Arc(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem_Arc(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	PageItem_Arc(const PageItem& p);
 	~PageItem_Arc() {};
 

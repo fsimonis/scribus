@@ -376,6 +376,9 @@ PageItem::PageItem(const PageItem & other)
 
 
 PageItem::PageItem(ScribusDoc *doc, ItemType newType, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
+ : PageItem(doc, newType, x, y, w, h, w2, fill, outline, NameTiming::Direct){};
+
+PageItem::PageItem(ScribusDoc *doc, ItemType newType, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
 	// Initialize superclass(es)
 	: QObject(doc), SingleObservable<PageItem>(doc->itemsChanged()), TextContext(this),
 	// Initialize member variables
@@ -435,70 +438,64 @@ PageItem::PageItem(ScribusDoc *doc, ItemType newType, double x, double y, double
 			// because c++'s typeinfos are still saying it's
 			// a plain pageitem
 			// This is fixed in the PageItem_LatexFrame constructor
-			m_itemName = tr("Image");
 			setUPixmap(Um::IImageFrame);
 			break;
 		case TextFrame:
-			m_itemName = tr("Text");
 			setUPixmap(Um::ITextFrame);
 			break;
 		case Line:
-			m_itemName = tr("Line");
 			setUPixmap(Um::ILine);
 			break;
 		case Polygon:
-			m_itemName = tr("Polygon");
 			setUPixmap(Um::IPolygon);
 			break;
 		case PolyLine:
-			m_itemName = tr("Polyline");
 			setUPixmap(Um::IPolyline);
 			break;
 		case PathText:
-			m_itemName = tr("PathText");
 			setUPixmap(Um::IPathText);
 			break;
 		case Symbol:
-			m_itemName = tr("Symbol");
 			setUPixmap(Um::IPolygon);
 			break;
 		case Group:
-			m_itemName = tr("Group");
 			setUPixmap(Um::IPolygon);
 			break;
 		case RegularPolygon:
-			m_itemName = tr("RegularPolygon");
 			setUPixmap(Um::IPolygon);
 			break;
 		case Arc:
-			m_itemName = tr("Arc");
 			setUPixmap(Um::IPolygon);
 			break;
 		case Spiral:
-			m_itemName = tr("Spiral");
 			setUPixmap(Um::IPolygon);
 			break;
 		case Table:
-			m_itemName = tr("Table");
 			//setUPixmap(Um::IPolygon); // TODO: Fix this.
 			break;
 		default:
-			m_itemName = "Item";
 			break;
 	}
 	m_Doc->TotalItems++;
+
+  if (nameTiming == NameTiming::Deferred) {
+    // It is the callers responsibilty to create a usable name
+    m_itemName = "pending";
+  } else {
+    m_itemName = nameFromType(m_itemType);
 	
-	QString oldName(m_itemName);
-	int nameNum = m_Doc->TotalItems;
-	m_itemName += tmp.setNum(m_Doc->TotalItems);
-	while (m_Doc->itemNameExists(m_itemName))
-	{
-		++nameNum;
-		m_itemName = oldName + tmp.setNum(nameNum);
-	}
+    QString oldName(m_itemName);
+    int nameNum = m_Doc->TotalItems;
+    m_itemName += tmp.setNum(m_Doc->TotalItems);
+    while (m_Doc->itemNameExists(m_itemName))
+    {
+      ++nameNum;
+      m_itemName = oldName + tmp.setNum(nameNum);
+    }
 	
-	uniqueNr = m_Doc->TotalItems;
-	setUName(m_itemName);
+    //uniqueNr = m_Doc->TotalItems;
+    setUName(m_itemName);
+  }
 	m_annotation.setBorderColor(outline);
 
 	ImageIntent = Intent_Relative_Colorimetric;
@@ -701,6 +698,39 @@ PageItem::~PageItem()
 //			unWeldFromMaster(true);
 //		if (isWelded())
 //			unWeldChild();
+}
+
+QString PageItem::nameFromType(ItemType type) {
+  switch (type) {
+    case ImageFrame:
+    case OSGFrame:
+    case LatexFrame:
+      return tr("Image");
+    case TextFrame:
+      return tr("Text");
+    case Line:
+      return tr("Line");
+    case Polygon:
+      return tr("Polygon");
+    case PolyLine:
+      return tr("Polyline");
+    case PathText:
+      return tr("PathText");
+    case Symbol:
+      return tr("Symbol");
+    case Group:
+      return tr("Group");
+    case RegularPolygon:
+      return tr("RegularPolygon");
+    case Arc:
+      return tr("Arc");
+    case Spiral:
+      return tr("Spiral");
+    case Table:
+      return tr("Table");
+    default:
+      return "Item";
+  }
 }
 
 bool PageItem::isMasterItem() const
@@ -2383,6 +2413,15 @@ void PageItem::DrawPolyL(QPainter *p, const QPolygon& pts)
 		firstVal = (*it2);
 	}
 	p->drawPolygon(pts.constData() + firstVal, pts.size() - firstVal);
+}
+
+void PageItem::setSafeItemName(const QString& uniqueName)
+{
+	if (m_itemName == uniqueName || uniqueName.isEmpty())
+		return;
+
+  m_itemName = uniqueName;
+	setUName(m_itemName);
 }
 
 void PageItem::setItemName(const QString& newName)

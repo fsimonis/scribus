@@ -48,6 +48,7 @@ class SCRIBUS_API PageItem_TextFrame : public PageItem
 
 public:
 	PageItem_TextFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem_TextFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	PageItem_TextFrame(const PageItem & p);
 	~PageItem_TextFrame() {}
 

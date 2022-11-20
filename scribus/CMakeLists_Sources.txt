@@ -25,6 +25,7 @@ set(SCRIBUS_SOURCES
 	actionmanager.cpp
 	actionsearch.cpp
 	appmodehelper.cpp
+  bulkadder.cpp
 	canvas.cpp
 	canvasgesture_cellselect.cpp
 	canvasgesture_columnresize.cpp

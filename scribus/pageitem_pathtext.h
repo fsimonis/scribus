@@ -36,6 +36,7 @@ class SCRIBUS_API PageItem_PathText : public PageItem
 
 public:
 	PageItem_PathText(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem_PathText(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	PageItem_PathText(const PageItem & p) : PageItem(p) {}
 	~PageItem_PathText() {};
 	

@@ -48,7 +48,10 @@ for which a new license (GPL+exception) is in place.
 using namespace std;
 
 PageItem_Spiral::PageItem_Spiral(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-	: PageItem(pa, PageItem::Spiral, x, y, w, h, w2, fill, outline)
+	: PageItem_Spiral(pa, x, y, w, h, w2, fill, outline, NameTiming::Direct) {}
+
+PageItem_Spiral::PageItem_Spiral(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::Spiral, x, y, w, h, w2, fill, outline, nameTiming)
 {
 	spiralStartAngle = m_Doc->itemToolPrefs().spiralStartAngle;
 	spiralEndAngle = m_Doc->itemToolPrefs().spiralEndAngle;

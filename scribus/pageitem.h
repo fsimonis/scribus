@@ -39,6 +39,7 @@ for which a new license (GPL+exception) is in place.
 #include <QVector>
 #include <QTemporaryFile>
 
+#include "deferredtask.h"
 #include "scribusapi.h"
 #include "annotation.h"
 #include "commonstrings.h"
@@ -221,6 +222,11 @@ public:	// Start enumerator definitions
 		Round		= 2,
 		Other		= 3
 	};
+
+  enum struct NameTiming : bool {
+    Direct,
+    Deferred
+  };
 		//End enumerator definitions
 
 	// This property may not hang around for too long, but should be useful
@@ -236,6 +242,7 @@ public:	// Start enumerator definitions
 public: // Start public functions
 
 	PageItem(ScribusDoc *doc, ItemType newType, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+	PageItem(ScribusDoc *doc, ItemType newType, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 	~PageItem() override;
 
 	/* these do essentially the same as a dynamic cast but might be more readable */
@@ -833,6 +840,8 @@ public: // Start public functions
 	 */
 	void setItemName(const QString& newName);
 
+	void setSafeItemName(const QString& uniqueName);
+
 	/**
 	* @brief Set the masterpage the object is on
 	* @param mpName name of the master page
@@ -1288,6 +1297,8 @@ public: // Start public functions
 	void setGroupClipping(bool val) { m_groupClips = val; }
 	bool hasFill() { return ((fillColor() != CommonStrings::None) || (GrType != 0)); }
 	bool hasStroke() { return ((lineColor() != CommonStrings::None) || (GrTypeStroke != 0) || (!NamedLStyle.isEmpty()) || (!patternStrokeVal.isEmpty())); }
+
+  QString nameFromType(ItemType type);
 
 		// End public functions
 

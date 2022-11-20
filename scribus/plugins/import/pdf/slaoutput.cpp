@@ -288,8 +288,8 @@ QString AnoOutputDev::getColor(GfxColorSpace *color_space, const GfxColor *color
 }
 
 SlaOutputDev::SlaOutputDev(ScribusDoc* doc, QList<PageItem*> *Elements, QStringList *importedColors, int flags)
+  : m_doc(doc), m_bulkadder(doc)
 {
-	m_doc = doc;
 	m_Elements = Elements;
 	pushGroup();
 	m_importedColors = importedColors;
@@ -400,7 +400,7 @@ bool SlaOutputDev::annotations_callback(Annot *annota, void *user_data)
 bool SlaOutputDev::handleTextAnnot(Annot* annota, double xCoor, double yCoor, double width, double height)
 {
 	AnnotText *anl = (AnnotText*)annota;
-	int z = m_doc->itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, CommonStrings::None, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, CommonStrings::None, CommonStrings::None);
 	PageItem *ite = m_doc->Items->at(z);
 	int flg = annota->getFlags();
 	if (!(flg & 16))
@@ -547,7 +547,7 @@ bool SlaOutputDev::handleLinkAnnot(Annot* annota, double xCoor, double yCoor, do
 	}
 	if (validLink)
 	{
-		int z = m_doc->itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, CommonStrings::None, CommonStrings::None);
+		int z = m_bulkadder.itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, CommonStrings::None, CommonStrings::None);
 		PageItem *ite = m_doc->Items->at(z);
 		int flg = annota->getFlags();
 		if (!(flg & 16))
@@ -713,7 +713,7 @@ bool SlaOutputDev::handleWidgetAnnot(Annot* annota, double xCoor, double yCoor, 
 				delete annotOutDev;
 			}
 			const auto& graphicState = m_graphicStack.top();
-			int z = m_doc->itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, graphicState.fillColor, CommonStrings::None);
+			int z = m_bulkadder.itemAdd(PageItem::TextFrame, PageItem::Rectangle, xCoor, yCoor, width, height, 0, graphicState.fillColor, CommonStrings::None);
 			PageItem *ite = m_doc->Items->at(z);
 			int flg = annota->getFlags();
 			if (!(flg & 16))
@@ -1279,7 +1279,7 @@ void SlaOutputDev::endPage()
 			}
 			if (!m_tmpSel->isEmpty())
 			{
-				PageItem *ite = m_doc->groupObjectsSelection(m_tmpSel);
+				PageItem *ite = m_bulkadder.groupObjectsSelection(m_tmpSel);
 				ite->setItemName(it.key());
 				m_Elements->append(ite);
 				if (m_groupStack.count() != 0)
@@ -1313,7 +1313,7 @@ void SlaOutputDev::restoreState(GfxState *state)
 					m_tmpSel->addItem(gElements.Items.at(dre), true);
 					m_Elements->removeAll(gElements.Items.at(dre));
 				}
-				PageItem *ite = m_doc->groupObjectsSelection(m_tmpSel);
+				PageItem *ite = m_bulkadder.groupObjectsSelection(m_tmpSel);
 				if (ite)
 				{
 					QPainterPath clippath = m_graphicStack.top().clipPath;
@@ -1408,7 +1408,7 @@ void SlaOutputDev::endTransparencyGroup(GfxState *state)
 			m_tmpSel->addItem(gElements.Items.at(dre), true);
 			m_Elements->removeAll(gElements.Items.at(dre));
 		}
-		PageItem *ite = m_doc->groupObjectsSelection(m_tmpSel);
+		PageItem *ite = m_bulkadder.groupObjectsSelection(m_tmpSel);
 		ite->setFillTransparency(1.0 - state->getFillOpacity());
 		ite->setFillBlendmode(getBlendMode(state));
 		ScPattern pat(m_doc);
@@ -1438,7 +1438,7 @@ void SlaOutputDev::endTransparencyGroup(GfxState *state)
 		m_Elements->removeAll(gElements.Items.at(dre));
 	}
 	if ((gElements.Items.count() != 1) || (gElements.isolated))
-		ite = m_doc->groupObjectsSelection(m_tmpSel);
+		ite = m_bulkadder.groupObjectsSelection(m_tmpSel);
 	else
 		ite = gElements.Items.first();
 	if (ite->isGroup())
@@ -1588,9 +1588,9 @@ void SlaOutputDev::stroke(GfxState *state)
 
 	int z;
 	if (m_pathIsClosed)
-		z = m_doc->itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, state->getTransformedLineWidth(), CommonStrings::None, graphicState.strokeColor);
+		z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, state->getTransformedLineWidth(), CommonStrings::None, graphicState.strokeColor);
 	else
-		z = m_doc->itemAdd(PageItem::PolyLine, PageItem::Unspecified, xCoor, yCoor, 10, 10, state->getTransformedLineWidth(), CommonStrings::None, graphicState.strokeColor);
+		z = m_bulkadder.itemAdd(PageItem::PolyLine, PageItem::Unspecified, xCoor, yCoor, 10, 10, state->getTransformedLineWidth(), CommonStrings::None, graphicState.strokeColor);
 	PageItem* ite = m_doc->Items->at(z);
 	ite->PoLine = out.copy();
 	ite->ClipEdited = true;
@@ -1689,9 +1689,9 @@ void SlaOutputDev::createFillItem(GfxState *state, Qt::FillRule fillRule)
 		graphicState.fillColor = getColor(state->getFillColorSpace(), state->getFillColor(), &graphicState.fillShade);
 		int z;
 		if (m_pathIsClosed)
-			z = m_doc->itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, graphicState.fillColor, CommonStrings::None);
+			z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, graphicState.fillColor, CommonStrings::None);
 		else
-			z = m_doc->itemAdd(PageItem::PolyLine, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, graphicState.fillColor, CommonStrings::None);
+			z = m_bulkadder.itemAdd(PageItem::PolyLine, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, graphicState.fillColor, CommonStrings::None);
 		PageItem* ite = m_doc->Items->at(z);
 		ite->PoLine.fromQPainterPath(clippedPath, true);
 		ite->ClipEdited = true;
@@ -1813,7 +1813,7 @@ bool SlaOutputDev::axialShadedFill(GfxState *state, GfxAxialShading *shading, do
 	m_coords = output;
 
 	const auto& graphicState = m_graphicStack.top();
-	int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), bb.width(), bb.height(), 0, graphicState.fillColor, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), bb.width(), bb.height(), 0, graphicState.fillColor, CommonStrings::None);
 	PageItem* ite = m_doc->Items->at(z);
 	if (checkClip())
 	{
@@ -1935,7 +1935,7 @@ bool SlaOutputDev::radialShadedFill(GfxState *state, GfxRadialShading *shading, 
 	m_coords = output;
 
 	const auto& graphicState = m_graphicStack.top();
-	int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
 	PageItem* ite = m_doc->Items->at(z);
 	if (checkClip())
 	{
@@ -1998,7 +1998,7 @@ bool SlaOutputDev::gouraudTriangleShadedFill(GfxState *state, GfxGouraudTriangle
 	const double *ctm = state->getCTM();
 	m_ctm = QTransform(ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
 	const auto& graphicState = m_graphicStack.top();
-	int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
 	PageItem* ite = m_doc->Items->at(z);
 	ite->ClipEdited = true;
 	ite->FrameType = 3;
@@ -2079,7 +2079,7 @@ bool SlaOutputDev::patchMeshShadedFill(GfxState *state, GfxPatchMeshShading *sha
 	const double *ctm = state->getCTM();
 	m_ctm = QTransform(ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
 	const auto& graphicState = m_graphicStack.top();
-	int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
 	PageItem* ite = m_doc->Items->at(z);
 	ite->ClipEdited = true;
 	ite->FrameType = 3;
@@ -2257,7 +2257,7 @@ bool SlaOutputDev::tilingPatternFill(GfxState *state, Gfx * /*gfx*/, Catalog *ca
 		m_doc->itemSelection_FlipV();
 		PageItem *ite;
 		if (m_doc->m_Selection->count() > 1)
-			ite = m_doc->groupObjectsSelection();
+			ite = m_bulkadder.groupObjectsSelection();
 		else
 			ite = m_doc->m_Selection->itemAt(0);
 		ite->setFillTransparency(1.0 - state->getFillOpacity());
@@ -2296,7 +2296,7 @@ bool SlaOutputDev::tilingPatternFill(GfxState *state, Gfx * /*gfx*/, Catalog *ca
 	m_coords = output;
 
 	const auto& graphicState = m_graphicStack.top();
-	int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Rectangle, xCoor + crect.x(), yCoor + crect.y(), crect.width(), crect.height(), 0, graphicState.fillColor, CommonStrings::None);
 	ite = m_doc->Items->at(z);
 
 	m_ctm = QTransform(ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
@@ -2683,7 +2683,7 @@ void SlaOutputDev::createImageFrame(QImage& image, GfxState *state, int numColor
 	without_rotation = m_ctm * without_rotation.rotate(angle);
 	QRectF trect_wr = without_rotation.mapRect(QRectF(0, 0, 1, 1));
 
-	int z = m_doc->itemAdd(PageItem::ImageFrame, PageItem::Rectangle, xCoor + torigin.x(), yCoor + torigin.y(), trect_wr.width(), trect_wr.height(), 0, CommonStrings::None, CommonStrings::None);
+	int z = m_bulkadder.itemAdd(PageItem::ImageFrame, PageItem::Rectangle, xCoor + torigin.x(), yCoor + torigin.y(), trect_wr.width(), trect_wr.height(), 0, CommonStrings::None, CommonStrings::None);
 	PageItem* ite = m_doc->Items->at(z);
 	ite->ClipEdited = true;
 	ite->FrameType = 3;
@@ -3268,7 +3268,7 @@ void SlaOutputDev::drawChar(GfxState* state, double x, double y, double dx, doub
 			}
 			if ((textPath.size() > 3) && ((wh.x() != 0.0) || (wh.y() != 0.0)) && (textRenderingMode != 7))
 			{
-				int z = m_doc->itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, CommonStrings::None, CommonStrings::None);
+				int z = m_bulkadder.itemAdd(PageItem::Polygon, PageItem::Unspecified, xCoor, yCoor, 10, 10, 0, CommonStrings::None, CommonStrings::None);
 				PageItem* ite = m_doc->Items->at(z);
 
 				// todo: merge this between vector and text implementations.
@@ -3332,7 +3332,7 @@ void SlaOutputDev::endType3Char(GfxState *state)
 		}
 		PageItem *ite;
 		if (m_doc->m_Selection->count() > 1)
-			ite = m_doc->groupObjectsSelection();
+			ite = m_bulkadder.groupObjectsSelection();
 		else
 			ite = m_doc->m_Selection->itemAt(0);
 		if (!f3e.colored)
@@ -3389,7 +3389,7 @@ void SlaOutputDev::endTextObject(GfxState *state)
 			}
 			PageItem *ite;
 			if (gElements.Items.count() != 1)
-				ite = m_doc->groupObjectsSelection(m_tmpSel);
+				ite = m_bulkadder.groupObjectsSelection(m_tmpSel);
 			else
 				ite = gElements.Items.first();
 			ite->setGroupClipping(false);

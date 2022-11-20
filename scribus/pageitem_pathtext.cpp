@@ -54,7 +54,11 @@ for which a new license (GPL+exception) is in place.
 using namespace std;
 
 PageItem_PathText::PageItem_PathText(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline)
-	: PageItem(pa, PageItem::PathText, x, y, w, h, w2, fill, outline)
+	: PageItem_PathText(pa, x, y, w, h, w2, fill, outline, NameTiming::Direct) {};
+
+
+PageItem_PathText::PageItem_PathText(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming)
+	: PageItem(pa, PageItem::PathText, x, y, w, h, w2, fill, outline, nameTiming)
 {
 	firstChar = 0;
 	m_maxChars = itemText.length();

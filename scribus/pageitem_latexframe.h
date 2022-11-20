@@ -46,6 +46,7 @@ class SCRIBUS_API PageItem_LatexFrame : public PageItem_ImageFrame
 
 	public:
 		PageItem_LatexFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline);
+		PageItem_LatexFrame(ScribusDoc *pa, double x, double y, double w, double h, double w2, const QString& fill, const QString& outline, NameTiming nameTiming);
 		~PageItem_LatexFrame();
 		
 		PageItem_LatexFrame * asLatexFrame() override { return this; }
