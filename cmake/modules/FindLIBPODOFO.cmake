@@ -22,7 +22,7 @@ pkg_search_module(libpodofo REQUIRED libpodofo podofo)
 
 if (DEFINED LIBPODOFO_DIR_PREFIX)
 	find_path(LIBPODOFO_INCLUDE_DIR
-		NAMES podofo/podofo.h
+		NAMES podofo.h
 		PATHS
 		"${LIBPODOFO_DIR_PREFIX}/include"
 		"${LIBPODOFO_DIR_PREFIX}"
@@ -39,7 +39,8 @@ if (DEFINED LIBPODOFO_DIR_PREFIX)
 	)
 else()
 	find_path(LIBPODOFO_INCLUDE_DIR
-		NAMES podofo/podofo.h
+		NAMES podofo.h
+		PATH_SUFFIXES podofo
 		PATHS
 		${libpodofo_INCLUDE_DIRS}
 	)
@@ -59,8 +60,8 @@ if(LIBPODOFO_INCLUDE_DIR AND LIBPODOFO_LIBRARY)
 			set(LIBPODOFO_CONFIG_H "${LIBPODOFO_INCLUDE_DIR}/podofo/base/podofo_config.h" CACHE FILEPATH "Alternative place of podofo_config.h. PoDoFo <=0.10.0")
 		endif()
 		#PoDoFo 0.10.0 or higher
-		if (EXISTS "${LIBPODOFO_INCLUDE_DIR}/podofo/auxiliary/podofo_config.h")
-			set(LIBPODOFO_CONFIG_H "${LIBPODOFO_INCLUDE_DIR}/podofo/auxiliary/podofo_config.h" CACHE FILEPATH "Alternative place of podofo_config.h. PoDoFo >=0.10.0")
+		if (EXISTS "${LIBPODOFO_INCLUDE_DIR}/auxiliary/podofo_config.h")
+			set(LIBPODOFO_CONFIG_H "${LIBPODOFO_INCLUDE_DIR}/auxiliary/podofo_config.h" CACHE FILEPATH "Alternative place of podofo_config.h. PoDoFo >=0.10.0")
 		endif()
 	endif()
 
